@@ -59,9 +59,27 @@ import org.firstinspires.ftc.vision.VisionPortal;
 //@Disabled
 public class PruebaAprilTags extends OpMode
 {
-
+    private AprilTagProcessor tagProcessor;
+    private VisionPortal visionPortal;
+    
     @Override
     public void init() {
+
+        tagProcessor = new AprilTagProcessor.Builder()
+                .setDrawAxes(true)
+                .setDrawCubeProjection(true)
+                .setDrawTagID(true)
+                .setDrawTagOutline(true)
+                .build();
+
+        visionPortal = new VisionPortal.Builder()
+                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+                .setCameraResolution(new Size(640, 480)) //resolution 
+                .addProcessor(tagProcessor)
+                .build();
+
+        }
+
 
     }
 
@@ -76,12 +94,26 @@ public class PruebaAprilTags extends OpMode
     }
 
     @Override
-    public void loop() {
+    public void loop() { 
+         if (tagProcessor.getDetections().size() > 0 ) {
+               AprilTagDetection tag = tagProcessor.getDetections().get(0);
+            
+            telemetry.addData("x", tag.ftcPose.x);
+            telemetry.addData("y", tag.ftcPose.y);
+            telemetry.addData("z", tag.ftcPose.z);
+            telemetry.addData("roll", tag.ftcPose.roll);
+            telemetry.addData("pitch", tag.ftcPose.pitch);
+            telemetry.addData("yaw", tag.ftcPose.yaw);
 
     }
 
+    telemetry.update();
+
     @Override
     public void stop() {
+        if (visionPortal != null){
+            visionPortal.close();
+        }
 
     }
 
